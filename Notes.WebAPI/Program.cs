@@ -153,10 +153,7 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseExceptionHandler(o =>
-{
-    o.UseMiddleware<NotesExceptionHandlerMiddleware>();
-});
+app.UseMiddleware<NotesExceptionHandlerMiddleware>();
 
 app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
 
