@@ -7,11 +7,13 @@ namespace Notes.Services.Notes.Commands;
 
 public class NoteCreate : ICommand<NoteDetailsDto>
 {
-    public NoteCreate(string content)
+    public NoteCreate(int userId, string content)
     {
+        UserId = userId;
         Content = content;
     }
-    
+
+    public readonly int UserId;
     public readonly string Content;
 }
 

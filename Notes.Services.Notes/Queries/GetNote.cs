@@ -7,12 +7,14 @@ namespace Notes.Services.Notes.Queries;
 
 public class GetNote : IQuery<NoteDetailsDto>
 {
-    public GetNote(int id)
+    public GetNote(int id, int userId)
     {
         Id = id;
+        UserId = userId;
     }
 
     public readonly int Id;
+    public readonly int UserId;
 }
 
 public class GetNoteHandler : IQueryHandler<GetNote, NoteDetailsDto>

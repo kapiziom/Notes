@@ -6,12 +6,14 @@ namespace Notes.Services.Notes.Commands;
 
 public class NoteDelete : ICommand<bool>
 {
-    public NoteDelete(int id)
+    public NoteDelete(int id, int userId)
     {
         Id = id;
+        UserId = userId;
     }
 
     public readonly int Id;
+    public readonly int UserId;
 }
 
 public class NoteDeleteHandler : ICommandHandler<NoteDelete, bool>

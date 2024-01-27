@@ -8,12 +8,16 @@ namespace Notes.Services.Notes.Queries;
 
 public class GetNotes : IQuery<IEnumerable<NoteDto>>
 {
-    public GetNotes(PageInput pageInput)
+    public GetNotes(int userId, PageInput pageInput, NoteFilterModel filterModel)
     {
+        UserId = userId;
         PageInput = pageInput;
+        FilterModel = filterModel;
     }
 
+    public readonly int UserId;
     public readonly PageInput PageInput;
+    public readonly NoteFilterModel FilterModel;
 }
 
 public class GetNotesHandler : IQueryHandler<GetNotes, IEnumerable<NoteDto>>

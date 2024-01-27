@@ -7,13 +7,15 @@ namespace Notes.Services.Notes.Commands;
 
 public class NoteUpdate : ICommand<NoteDetailsDto>
 {
-    public NoteUpdate(int id, string content)
+    public NoteUpdate(int id, int userId, string content)
     {
         Id = id;
+        UserId = userId;
         Content = content;
     }
 
     public readonly int Id;
+    public readonly int UserId;
     public readonly string Content;
 }
 
