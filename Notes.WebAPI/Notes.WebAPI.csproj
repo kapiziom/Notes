@@ -26,6 +26,7 @@
       <ProjectReference Include="..\Notes.Data\Notes.Data.csproj" />
       <ProjectReference Include="..\Notes.Services.Identities\Notes.Services.Identities.csproj" />
       <ProjectReference Include="..\Notes.Services.Notes\Notes.Services.Notes.csproj" />
+      <ProjectReference Include="..\Notes.Services.Tags\Notes.Services.Tags.csproj" />
     </ItemGroup>
 
     <ItemGroup>

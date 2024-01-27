@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace Notes.Common.Paging
 {
@@ -6,11 +7,13 @@ namespace Notes.Common.Paging
     {
         public string SortBy { get; set; }
         
-        public SortOrder SortOrder { get; set; }
+        [DefaultValue(Paging.SortOrder.Asc)]
+        public SortOrder? SortOrder { get; set; }
         
+        [Range(0, int.MaxValue)]
         public int Offset { get; set; }
         
-        [Range(1, int.MaxValue)]
+        [Range(1, 500)]
         public int PageSize { get; set; }
     }
 }
