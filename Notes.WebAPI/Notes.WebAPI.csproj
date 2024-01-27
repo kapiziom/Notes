@@ -19,6 +19,22 @@
         <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.1" />
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+        <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.5.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Notes.Common\Notes.Common.csproj" />
+      <ProjectReference Include="..\Notes.Data\Notes.Data.csproj" />
+      <ProjectReference Include="..\Notes.Services.Identities\Notes.Services.Identities.csproj" />
+      <ProjectReference Include="..\Notes.Services.Notes\Notes.Services.Notes.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Infrastructure\" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="Notes.Tests" />
     </ItemGroup>
 
 </Project>
