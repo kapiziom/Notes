@@ -12,12 +12,12 @@ public abstract class NoteInput
 
 public class NoteCreateInput : NoteInput
 {
-    public NoteCreate ToCommand() =>
-        new (Content);
+    public NoteCreate ToCommand(int userId) =>
+        new (userId, Content);
 }
 
 public class NoteUpdateInput : NoteInput
 {
-    public NoteUpdate ToCommand(int id) =>
-        new (id, Content);
+    public NoteUpdate ToCommand(int id, int userId) =>
+        new (id, userId, Content);
 }

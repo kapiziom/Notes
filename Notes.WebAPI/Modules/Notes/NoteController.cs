@@ -19,33 +19,44 @@ public class NoteController : ControllerBase
         _messageBroker = messageBroker;
     }
 
+    [HttpPost]
+    public async Task<ActionResult<NoteDetailsDto>> Create(
+        [FromBody] NoteCreateInput input,
+        CancellationToken ct = default) => 
+        await _messageBroker.SendCommandAsync(input.ToCommand(UserId()), ct);
+
     [HttpGet]
     public async Task<ActionResult<IEnumerable<NoteDto>>> Get(
-        [FromQuery] object filter,
+        [FromQuery] NoteFilterModel filter,
         [FromQuery] PageInput pager,
         CancellationToken ct = default) =>
-        Ok(await _messageBroker.SendQueryAsync(new GetNotes(pager), ct));
+        Ok(await _messageBroker.SendQueryAsync(new GetNotes(UserId(), pager, filter), ct));
 
     [HttpGet("{id}")]
     public async Task<ActionResult<NoteDetailsDto>> GetById(
         [FromRoute] int id,
         CancellationToken ct = default) =>
-        await _messageBroker.SendQueryAsync(new GetNote(id), ct);
+        await _messageBroker.SendQueryAsync(new GetNote(id, UserId()), ct);
 
     [HttpPatch("{id}")]
     public async Task<ActionResult<NoteDetailsDto>> Update(
         [FromRoute] int id,
         [FromBody] NoteUpdateInput input,
         CancellationToken ct = default) => 
-        await _messageBroker.SendCommandAsync(input.ToCommand(id), ct);
+        await _messageBroker.SendCommandAsync(input.ToCommand(id, UserId()), ct);
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(
         [FromRoute] int id,
         CancellationToken ct = default)
     {
-        await _messageBroker.SendCommandAsync(new NoteDelete(id), ct);
+        await _messageBroker.SendCommandAsync(new NoteDelete(id, UserId()), ct);
 
         return NoContent();
     }
+
+    private int UserId() => int.Parse(GetValueByClaimType("Id"));
+        
+    private string GetValueByClaimType(string claimType) =>
+        User.Claims.SingleOrDefault(o => o.Type.Equals(claimType))?.Value ?? string.Empty;
 }

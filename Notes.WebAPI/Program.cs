@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
@@ -7,9 +8,14 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Notes.Common.Caching;
 using Notes.Common.Messaging;
+using Notes.Common.Security.Token;
 using Notes.Data;
+using Notes.Data.DataSeeder;
+using Notes.Services.Identities.Commands;
 using Notes.Services.Identities.Services;
+using Notes.Services.Notes.Commands;
 using Notes.WebAPI.Infrastructure.Caching;
+using Notes.WebAPI.Infrastructure.Middleware;
 using Notes.WebAPI.Modules.Identities;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -70,6 +76,8 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 builder.Services.AddMediatR(c =>
 {
     c.RegisterServicesFromAssembly(typeof(Program).Assembly);
+    c.RegisterServicesFromAssembly(typeof(IdentityCreate).Assembly);
+    c.RegisterServicesFromAssembly(typeof(NoteCreate).Assembly);
 });
 
 builder.Services.AddScoped<IMessageBroker, Notes.WebAPI.Infrastructure.Messaging.MediatR>();
@@ -83,8 +91,7 @@ builder.Services.AddSingleton<ITokenService>(o => new JwtTokenService(
 
 var app = builder.Build();
 
-if (app.Environment.EnvironmentName != "Testing")
-    UpdateDatabase(app);
+UpdateDatabase(app, app.Environment, builder);
 
 app.UseForwardedHeaders();
 
@@ -103,14 +110,20 @@ if (app.Environment.IsDevelopment() || app.Environment.IsStaging())
         .AllowCredentials());
 }
 
+//if (app.Environment.IsDevelopment())
+  //  GenerateDevToken(app, builder);
+
 app.UseHttpsRedirection();
 
 app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
-            
-app.UseMiddleware<ExceptionHandlerMiddleware>();
+
+app.UseExceptionHandler(o =>
+{
+    o.UseMiddleware<NotesExceptionHandlerMiddleware>();
+});
 
 app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
 
@@ -119,8 +132,11 @@ return;
 
 
 // methods
-static void UpdateDatabase(IApplicationBuilder app)
+static void UpdateDatabase(IApplicationBuilder app, IWebHostEnvironment env, WebApplicationBuilder builder)
 {
+    if (env.EnvironmentName == "Testing")
+        return;
+    
     using var serviceScope = app.ApplicationServices
         .GetRequiredService<IServiceScopeFactory>()
         .CreateScope();
@@ -131,4 +147,44 @@ static void UpdateDatabase(IApplicationBuilder app)
         throw new Exception("Cannot connect to database.");
             
     notesContext.Database.Migrate();
+    
+    if (env.IsDevelopment())
+        InitDataSeeder.SeedDataDev(notesContext, builder.Configuration.GetValue<string>("DevAcc"));
+    else
+        InitDataSeeder.SeedData(notesContext);
+}
+
+static void GenerateDevToken(IApplicationBuilder app, WebApplicationBuilder builder)
+{
+    using var serviceScope = app.ApplicationServices
+        .GetRequiredService<IServiceScopeFactory>()
+        .CreateScope();
+
+    using var notesContext = serviceScope.ServiceProvider.GetService<NotesContext>();
+
+    if (!notesContext.Database.CanConnect())
+        throw new Exception("Cannot connect to database.");
+
+    var email = builder.Configuration.GetValue<string>("DevAcc");
+        
+    var devUser = notesContext.Identities
+        .FirstOrDefault(o => o.Email == email);
+
+    if (devUser is null)
+        throw new Exception("Cannot find devUser. " +
+            "Check if DevAcc value in appsettings.Development.json has valid value and restart application");
+
+    var payload = new Dictionary<string, string>
+    {
+        { "Id", devUser.Id.ToString() },
+        { "Email", devUser.Email }
+    };
+
+    var tokenService = serviceScope.ServiceProvider.GetService<ITokenService>();
+
+    var token = tokenService.IssueToken(TokenType.AccessToken, payload);
+
+    var path = $"{Directory.GetCurrentDirectory()}\\development.jwt";
+    
+    File.WriteAllText(path, token);
 }
