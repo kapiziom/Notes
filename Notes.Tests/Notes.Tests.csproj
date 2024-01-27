@@ -27,10 +27,12 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Notes.Data\Notes.Data.csproj" />
+      <ProjectReference Include="..\Notes.WebAPI\Notes.WebAPI.csproj" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\Notes.Data\Notes.Data.csproj" />
+      <ProjectReference Include="..\Notes.WebAPI\Notes.WebAPI.csproj" />
     </ItemGroup>
 
 </Project>
