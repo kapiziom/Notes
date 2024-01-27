@@ -1,7 +1,11 @@
-﻿using Notes.Common.Messaging.Handlers;
+﻿using Microsoft.EntityFrameworkCore;
+using Notes.Common.Messaging.Handlers;
 using Notes.Common.Messaging.Messages;
 using Notes.Data;
+using Notes.Data.Entities;
 using Notes.Services.Notes.Dto;
+using Notes.Services.Notes.Exceptions;
+using Notes.Services.Tags.Services;
 
 namespace Notes.Services.Notes.Commands;
 
@@ -22,14 +26,34 @@ public class NoteUpdate : ICommand<NoteDetailsDto>
 public class NoteUpdateHandler : ICommandHandler<NoteUpdate, NoteDetailsDto>
 {
     private readonly NotesContext _context;
+    private readonly ITagService _tagService;
 
-    public NoteUpdateHandler(NotesContext context)
+    public NoteUpdateHandler(NotesContext context, ITagService tagService)
     {
         _context = context;
+        _tagService = tagService;
     }
 
     public async Task<NoteDetailsDto> Handle(NoteUpdate command, CancellationToken ct = default)
     {
-        throw new NotImplementedException();
+        var note = await _context.Notes
+            .Include(o => o.NoteTags)
+            .FirstOrDefaultAsync(o => o.Id == command.Id
+                && o.UserId == command.UserId, ct)
+            ?? throw new NoteNotFoundException();
+        
+        var matchingTags = await _tagService.MatchingTags(command.Content, ct);
+
+        note.Content = command.Content;
+        note.DateModifiedUtc = DateTime.UtcNow;
+        note.NoteTags = new List<NoteTagEntity>(
+            matchingTags.Select(o => new NoteTagEntity
+            {
+                TagId = o.Id
+            }));
+
+        await _context.SaveChangesAsync(ct);
+
+        return new NoteDetailsDto(note, matchingTags);
     }
 }

@@ -2,5 +2,7 @@
 
 public class NoteFilterModel
 {
-    public string Tag { get; set; }
+    public IEnumerable<string> Tags { get; set; }
+    public DateTime? DateCreatedUtcFrom { get; set; }
+    public DateTime? DateCreatedUtcTo { get; set; }
 }
