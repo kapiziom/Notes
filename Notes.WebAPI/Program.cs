@@ -14,9 +14,12 @@ using Notes.Data.DataSeeder;
 using Notes.Services.Identities.Commands;
 using Notes.Services.Identities.Services;
 using Notes.Services.Notes.Commands;
+using Notes.Services.Tags.Dto;
+using Notes.Services.Tags.Services;
 using Notes.WebAPI.Infrastructure.Caching;
 using Notes.WebAPI.Infrastructure.Middleware;
 using Notes.WebAPI.Modules.Identities;
+using Notes.WebAPI.Modules.Tags;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -65,6 +68,33 @@ builder.Services.AddCors();
 builder.Services.AddSwaggerGen(o =>
 {
     o.SwaggerDoc("v1", new OpenApiInfo { Title = "Notes", Version = "v1" });
+
+    o.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "JWT Authorization header using the Bearer scheme. Example: \"Bearer {token}\"",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+    o.AddSecurityRequirement(new OpenApiSecurityRequirement()
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                },
+                Scheme = "oauth2",
+                Name = "Bearer",
+                In = ParameterLocation.Header,
+
+            },
+            new List<string>()
+        }
+    });
 });
 
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
@@ -78,12 +108,15 @@ builder.Services.AddMediatR(c =>
     c.RegisterServicesFromAssembly(typeof(Program).Assembly);
     c.RegisterServicesFromAssembly(typeof(IdentityCreate).Assembly);
     c.RegisterServicesFromAssembly(typeof(NoteCreate).Assembly);
+    c.RegisterServicesFromAssembly(typeof(TagDto).Assembly);
 });
 
 builder.Services.AddScoped<IMessageBroker, Notes.WebAPI.Infrastructure.Messaging.MediatR>();
 
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddSingleton<IPasswordService, PasswordService>();
+
+builder.Services.AddScoped<ITagService, TagService>();
 
 builder.Services.AddSingleton<ITokenService>(o => new JwtTokenService(
     builder.Configuration.GetValue<string>("SymmetricSecurityKey") 

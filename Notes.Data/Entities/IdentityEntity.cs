@@ -5,11 +5,13 @@ namespace Notes.Data.Entities;
 
 public class IdentityEntity
 {
-    public long Id { get; set; }
+    public int Id { get; set; }
     public DateTime DateCreatedUtc { get; set; }
     public string Email { get; set; }
     public string PasswordHash { get; set; }
     public string PasswordSalt { get; set; }
+    
+    public virtual ICollection<NoteEntity> Notes { get; set; }
 }
 
 public class IdentityMap : IEntityTypeConfiguration<IdentityEntity>

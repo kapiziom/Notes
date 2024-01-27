@@ -23,10 +23,12 @@ public class NoteTagMap : IEntityTypeConfiguration<NoteTagEntity>
 
         builder.HasOne(t => t.Note)
             .WithMany(t => t.NoteTags)
-            .HasForeignKey(t => t.NoteId);
+            .HasForeignKey(t => t.NoteId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasOne(t => t.Tag)
             .WithMany(t => t.NoteTags)
-            .HasForeignKey(t => t.TagId);
+            .HasForeignKey(t => t.TagId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

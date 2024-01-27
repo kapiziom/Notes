@@ -10,6 +10,9 @@ public class NoteEntity
     public DateTime? DateModifiedUtc { get; set; }
     public string Content { get; set; }
     
+    public int UserId { get; set; }
+    public IdentityEntity User { get; set; }
+    
     public virtual ICollection<NoteTagEntity> NoteTags { get; set; }
 }
 
@@ -24,5 +27,10 @@ public class NoteMap : IEntityTypeConfiguration<NoteEntity>
         builder.Property(t => t.Content)
             .HasMaxLength(512)
             .IsRequired();
+
+        builder.HasOne(t => t.User)
+            .WithMany(t => t.Notes)
+            .HasForeignKey(t => t.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
