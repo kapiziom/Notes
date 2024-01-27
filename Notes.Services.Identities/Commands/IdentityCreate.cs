@@ -59,7 +59,7 @@ public class IdentityCreateHandler : ICommandHandler<IdentityCreate, string>
         await _context.SaveChangesAsync(ct);
 
         return _tokenService.IssueToken(
-            TokenType.AuthorizationCode,
+            TokenType.AccessToken,
             new Dictionary<string, string>
             {
                 { "Id", $"{identity.Id}" },

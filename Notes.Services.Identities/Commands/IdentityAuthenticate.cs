@@ -49,7 +49,7 @@ public class IdentityAuthenticateHandler : ICommandHandler<IdentityAuthenticate,
             throw new InvalidCredentials();
 
         return _tokenService.IssueToken(
-            TokenType.AuthorizationCode,
+            TokenType.AccessToken,
             new Dictionary<string, string>
             {
                 { "Id", $"{identity.Id}" },
