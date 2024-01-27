@@ -4,12 +4,12 @@ using Notes.Common.Exceptions;
 
 namespace Notes.WebAPI.Infrastructure.Middleware
 {
-    public class ExceptionHandlerMiddleware
+    public class NotesExceptionHandlerMiddleware
     {
         private readonly RequestDelegate _request;
-        private readonly ILogger<ExceptionHandlerMiddleware> _logger;
+        private readonly ILogger<NotesExceptionHandlerMiddleware> _logger;
 
-        public ExceptionHandlerMiddleware(RequestDelegate request, ILogger<ExceptionHandlerMiddleware> logger)
+        public NotesExceptionHandlerMiddleware(RequestDelegate request, ILogger<NotesExceptionHandlerMiddleware> logger)
         {
             _request = request;
             _logger = logger;

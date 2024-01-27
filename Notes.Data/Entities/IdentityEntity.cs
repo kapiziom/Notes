@@ -1,11 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Notes.Data.Entities;
 
-[Table("Identities")]
 public class IdentityEntity
 {
     public long Id { get; set; }
@@ -19,6 +16,8 @@ public class IdentityMap : IEntityTypeConfiguration<IdentityEntity>
 {
     public void Configure(EntityTypeBuilder<IdentityEntity> builder)
     {
+        builder.ToTable("Identities");
+        
         builder.HasKey(t => t.Id);
 
         builder.Property(t => t.Email)

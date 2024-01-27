@@ -10,4 +10,8 @@
         <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.1" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Notes.Common\Notes.Common.csproj" />
+    </ItemGroup>
+
 </Project>
