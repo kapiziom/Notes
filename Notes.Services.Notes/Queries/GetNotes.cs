@@ -37,6 +37,18 @@ public class GetNotesHandler : IQueryHandler<GetNotes, PageDto<NoteDto>>
             .AsNoTracking()
             .Include(o => o.NoteTags).ThenInclude(o => o.Tag)
             .AsQueryable();
+
+        if (query.FilterModel.DateCreatedUtcFrom.HasValue)
+            notesQuery = notesQuery.Where(o => o.DateCreatedUtc > query.FilterModel.DateCreatedUtcFrom);
+
+        if (query.FilterModel.DateCreatedUtcTo.HasValue)
+            notesQuery = notesQuery.Where(o => o.DateCreatedUtc < query.FilterModel.DateCreatedUtcTo);
+
+        if (query.FilterModel.Tags.Any())
+        {
+            query.FilterModel.Tags = query.FilterModel.Tags.Select(o => o.ToUpper());
+            notesQuery = notesQuery.Where(o => query.FilterModel.Tags.Any(x => o.NoteTags.Any(y => y.Tag.Name.Equals(x))));
+        }
         
         var isAsc = query.PageInput.SortOrder == SortOrder.Asc;
 

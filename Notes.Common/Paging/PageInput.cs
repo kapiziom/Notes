@@ -5,7 +5,7 @@ namespace Notes.Common.Paging
 {
     public class PageInput
     {
-        public string SortBy { get; set; }
+        public string? SortBy { get; set; }
         
         [DefaultValue(Paging.SortOrder.Asc)]
         public SortOrder? SortOrder { get; set; }
