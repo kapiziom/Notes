@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Notes.Common.Messaging;
+using Notes.WebAPI.Infrastructure.Attributes;
 
 namespace Notes.WebAPI.Modules.Identities;
 
+[ValidateModel]
 [Route("api/[controller]")]
 public class IdentityController : ControllerBase
 {

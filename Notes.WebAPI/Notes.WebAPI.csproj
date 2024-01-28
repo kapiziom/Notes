@@ -30,11 +30,11 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Infrastructure\" />
+        <InternalsVisibleTo Include="Notes.Tests" />
     </ItemGroup>
 
     <ItemGroup>
-        <InternalsVisibleTo Include="Notes.Tests" />
+      <None Include="appsettings.Testing.json" />
     </ItemGroup>
 
 </Project>

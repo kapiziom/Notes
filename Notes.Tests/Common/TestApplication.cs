@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Notes.Data;
 
@@ -12,6 +13,11 @@ internal class TestApplication : WebApplicationFactory<Program>
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("Testing");
+
+        builder.ConfigureAppConfiguration((hostingContext, config) =>
+        {
+            config.AddJsonFile("appsettings.Testing.json", optional: false, reloadOnChange: true);
+        });
             
         builder.ConfigureServices(services =>
         {

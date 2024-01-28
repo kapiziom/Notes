@@ -5,10 +5,12 @@ using Notes.Common.Paging;
 using Notes.Services.Notes.Commands;
 using Notes.Services.Notes.Dto;
 using Notes.Services.Notes.Queries;
+using Notes.WebAPI.Infrastructure.Attributes;
 
 namespace Notes.WebAPI.Modules.Notes;
 
 [Authorize]
+[ValidateModel]
 [Route("api/[controller]")]
 public class NoteController : ControllerBase
 {

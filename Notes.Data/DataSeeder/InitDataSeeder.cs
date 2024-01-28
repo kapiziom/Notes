@@ -1,12 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Net.Mail;
-using Notes.Common.Messaging;
-using Notes.Data.Entities;
+﻿using Notes.Data.Entities;
 
 namespace Notes.Data.DataSeeder;
 
 public static class InitDataSeeder
-{
+{ 
     public static void SeedData(NotesContext context)
     {
         SeedTags(context);

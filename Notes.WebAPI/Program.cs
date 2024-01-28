@@ -124,7 +124,9 @@ builder.Services.AddSingleton<ITokenService>(o => new JwtTokenService(
 
 var app = builder.Build();
 
-UpdateDatabase(app, app.Environment, builder);
+UpdateDatabase(app, app.Environment);
+
+SeedData(app, app.Environment, builder);
 
 app.UseForwardedHeaders();
 
@@ -159,7 +161,7 @@ return;
 
 
 // methods
-static void UpdateDatabase(IApplicationBuilder app, IWebHostEnvironment env, WebApplicationBuilder builder)
+static void UpdateDatabase(IApplicationBuilder app, IWebHostEnvironment env)
 {
     if (env.EnvironmentName == "Testing")
         return;
@@ -174,8 +176,20 @@ static void UpdateDatabase(IApplicationBuilder app, IWebHostEnvironment env, Web
         throw new Exception("Cannot connect to database.");
             
     notesContext.Database.Migrate();
+}
+
+static void SeedData(IApplicationBuilder app, IWebHostEnvironment env, WebApplicationBuilder builder)
+{
+    using var serviceScope = app.ApplicationServices
+        .GetRequiredService<IServiceScopeFactory>()
+        .CreateScope();
+
+    using var notesContext = serviceScope.ServiceProvider.GetService<NotesContext>();
+
+    if (!notesContext.Database.CanConnect())
+        throw new Exception("Cannot connect to database.");
     
-    if (env.IsDevelopment())
+    if (env.IsDevelopment() || env.EnvironmentName == "Testing")
         InitDataSeeder.SeedDataDev(notesContext, builder.Configuration.GetValue<string>("DevAcc"));
     else
         InitDataSeeder.SeedData(notesContext);
