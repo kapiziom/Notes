@@ -59,8 +59,7 @@ namespace Notes.WebAPI.Infrastructure.Middleware
                     await context.Response.WriteAsync(JsonSerializer.Serialize(new
                     {
                         Reference = exception.GetType().Name,
-                        Message = exception.Message,
-                        Data = exception.Data
+                        Message = exception.Message
                     }));
                     break;
                 default:

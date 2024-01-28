@@ -143,9 +143,6 @@ if (app.Environment.IsDevelopment() || app.Environment.IsStaging())
         .AllowCredentials());
 }
 
-//if (app.Environment.IsDevelopment())
-  //  GenerateDevToken(app, builder);
-
 app.UseHttpsRedirection();
 
 app.UseRouting();
@@ -182,39 +179,4 @@ static void UpdateDatabase(IApplicationBuilder app, IWebHostEnvironment env, Web
         InitDataSeeder.SeedDataDev(notesContext, builder.Configuration.GetValue<string>("DevAcc"));
     else
         InitDataSeeder.SeedData(notesContext);
-}
-
-static void GenerateDevToken(IApplicationBuilder app, WebApplicationBuilder builder)
-{
-    using var serviceScope = app.ApplicationServices
-        .GetRequiredService<IServiceScopeFactory>()
-        .CreateScope();
-
-    using var notesContext = serviceScope.ServiceProvider.GetService<NotesContext>();
-
-    if (!notesContext.Database.CanConnect())
-        throw new Exception("Cannot connect to database.");
-
-    var email = builder.Configuration.GetValue<string>("DevAcc");
-        
-    var devUser = notesContext.Identities
-        .FirstOrDefault(o => o.Email == email);
-
-    if (devUser is null)
-        throw new Exception("Cannot find devUser. " +
-            "Check if DevAcc value in appsettings.Development.json has valid value and restart application");
-
-    var payload = new Dictionary<string, string>
-    {
-        { "Id", devUser.Id.ToString() },
-        { "Email", devUser.Email }
-    };
-
-    var tokenService = serviceScope.ServiceProvider.GetService<ITokenService>();
-
-    var token = tokenService.IssueToken(TokenType.AccessToken, payload);
-
-    var path = $"{Directory.GetCurrentDirectory()}\\development.jwt";
-    
-    File.WriteAllText(path, token);
 }
