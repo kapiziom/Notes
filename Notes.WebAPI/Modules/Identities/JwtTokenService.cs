@@ -37,9 +37,7 @@ namespace Notes.WebAPI.Modules.Identities
 
             tokenDescriptor.Expires += tokenType switch
             {
-                TokenType.AuthorizationCode => TimeSpan.FromMinutes(1),
                 TokenType.AccessToken => TimeSpan.FromHours(8),
-                TokenType.RefreshToken => TimeSpan.FromDays(1),
                 _ => throw new ArgumentOutOfRangeException()
             };
 
